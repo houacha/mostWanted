@@ -1,92 +1,53 @@
 "use strict"
-/*
-Build all of your functions for displaying and gathering information below (GUI).
-*/
-// app is the function called to start the entire application
-function app(people) {
-	let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
-	let searchResults;
-	switch (searchType) {
-		case 'yes':
-			searchResults = searchByName(people);
-			break;
-		case 'no':
-			promptFor("Do you know the traits of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
-			break;
-		default:
-			app(people); // restart app
-			break;
-	}
+//--------------------------------------------------------------------CLASS DECLARATION______________________________________________________________
+class peoples { 
+  id = ""; 
+  firstName = ""; 
+  lastName = "";
+  dob = "";
+  height = 0;
+  weight = 0; 
+  eyeColor = "";
+  occupation = "";
+  parents = [];
+  currentSpouse = 0; 
 
-	let filterResutl = people.filter(function (person) {
-		if (person.eyeColor == "Green") {
-			return true;
-		} else {
-			return false;
-		}
-	})
-
-	// Call the mainMenu function ONLY after you find the SINGLE person you are looking for
-	mainMenu(searchResults, people);
-}
-
-// Menu function to call once you find who you are looking for
-function mainMenu(person, people) {
-
-	/* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
-
-	if (!person) {
-		alert("Could not find that individual.");
-		return app(people); // restart
-	}
-	// let searchPerson = person.firstName + " " + person.lastName;
-	let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
-
-	switch (displayOption) {
-		case "info":
-			displayPerson(person);
-			// TODO: get person's info
-			break;
-		case "family":
-			displayPeople(person, people);
-			let response = promptFor("Would you like to look up other info? Enter 'yes' or 'no':", yesNo).toLowerCase();
-			switch (response) {
-				case 'yes':
-					mainMenu(person, people);
-					break;
-				case 'no':
-					break;
-			}
-			// TODO: get person's family
-			break;
-		case "descendants":
-			descendant(person, people, person);
-			let answer = promptFor("Would you like to look up other info? Enter 'yes' or 'no':", yesNo).toLowerCase();
-			switch (answer) {
-				case 'yes':
-					mainMenu(person, people);
-					break;
-				case 'no':
-					break;
-			}
-			// TODO: get person's descendants
-			break;
-		case "restart":
-			app(people); // restart
-			break;
-		case "quit":
-			return; // stop execution
-		default:
-			mainMenu(person, people); // ask again
-	}
-}
-
-function searchByTraits(people) {
+  constructor(id, firstName, lastName, dob, height, weight, eyeColor, occupation, parents, currentSpouse){ 
+    this.id = id; 
+    this.firstName = firstName; 
+    this.lastName = lastName; 
+    this.dob = dob; 
+    this.height = height; 
+    this.weight = weight; 
+    this.eyeColor = eyeColor; 
+    this.occupation = occupation; 
+    this.parents = parents; 
+    this.currentSpouse = currentSpouse; 
+  }
 
 }
+//____________________________________________________________________FUNCTION DECLARATIONS__________________________________________________________
+function makeFirstLetterCapital(input) {
+  input = input.charAt(0).toUpperCase() + input.slice(1);
+  return input; 
+}
+function checkIfArrayAlready(arr, input){ 
+  //returns true if the number is not present in array. Returns false if else. 
+  let returnval = true; 
+  for(let i = 0; i < arr.length; i++){ 
+    if(arr[i] == input){ 
+      alert("Input already exists in array. Please reenter input.")
+      returnval = false;
+    } 
+    if(returnval == false) { 
+      return false; 
+    } else { 
+      return true;
+    }
+  }
 
-//Finds the descendants of current person
 
+}
 function descendant(parent, people, searchPerson, iterate) {
 	let descendantsArray = [];
 	let children = ""
@@ -134,46 +95,290 @@ function descendant(parent, people, searchPerson, iterate) {
 				break;
 		}
 	}
+}
+function checkCountHighEnough(count) { 
+  if (count < 2) { 
+    alert("Not enough traits selected to quit. Minimum is 2. Your total so far: " + count);
+    return false; 
+  } else { 
+    return true;
+  }
+}
+function getTraitsFromUser(choicesCount, traitSearch, cont, choicesArr){ 
+  //choices menu - stores choices in array for identification, then array is accessed for user to provide information 
+  while(choicesCount < 5){ 
+    //first check if prompted entry is inside array
+    while(cont == true) { 
+      traitSearch = prompt("Pick a single trait from: \n 1. gender     2. eye color\n 3. height      4. weight\n 5. Occupation\n You will be asked for more information if you are able to provide it. Reqd: 2 search criterion.");
+      if (checkIfArrayAlready(choicesArr, traitSearch) == false){
+        alert("Value alread in array. Please enter again.")
+      } else { 
+        cont = false;
+      }
+    }
+    //now we've validated it doesnt exist inside array. reset continueand  add it to array and incrememnt choice number 
+    cont = true;
+    choicesArr.push(traitSearch);
+    choicesCount++;      
+    //ask if they'd like to go again, and validate if the counter is high enough for them to quit if they so choose
+    while(cont == true) {
+      traitSearch = prompt("Would you like to choose again? enter 'yes' to pick another trait."); 
+      if(traitSearch == 'yes'){ 
+        break;
+      } else { 
+        if(checkCountHighEnough(choicesCount) == false){ 
+          cont = true;
+        } else { 
+          choicesCount += 5;
+          cont = false;
+        }        
+      }
+    }
+  }     
+}
+function evalTraitsFromUser(choicesArr, caseChoice, choice, evaluatedChoicesArr){
+  //now iterate through array and ask about entered values 
+    //go through and ask about each 
+    for(let i = 0; i < choicesArr.length; i++){ 
+      if(choicesArr[i] == "1"){ //gender
+        while(caseChoice != "male" && caseChoice != "female") { 
+          caseChoice = prompt("You have selected gender: Enter 'male' or 'female'");
+        }                
+      } else if (choicesArr[i] == "2"){ //eyeColor
+        while(caseChoice != "brown" && caseChoice != "black" && caseChoice != "hazel" && caseChoice != "blue" && caseChoice != "green") { 
+          caseChoice = prompt("You have selected eye color.\nValid Eye Colors:\nBrown\nBlack\nHazel\nBlue\nGreen\n Type choice");
+        }        
+      } else if (choicesArr[i] == "3"){ //height
+        choice = -1;
+        while (choice < 0 || choice > 90){
+          choice = prompt("You have selected height. Please enter valid height in inches:");
+          caseChoice = choice;
+        }
+      } else if (choicesArr[i] == "4"){ //weight
+        choice = -1;
+        while (choice < 0 || choice > 500){
+          choice = prompt("You have selected weight. Please enter valid weight in lbs:");
+          caseChoice = choice; 
+        }
+      } else if (choicesArr[i] == "5"){ //occupation` 1 
+        while(caseChoice != "student" && caseChoice != "architect" && caseChoice != "doctor" && caseChoice != "assistant" && caseChoice != "nurse" && caseChoice != "landscaper" && caseChoice != "programmer"){ 
+          caseChoice = prompt("You have selected Occupation.\nValid Occupations:\n Enter doctor, student, assistant, nurse, landscaper, or programmer");
+        }        
+      }
+      evaluatedChoicesArr.push(caseChoice);
+    }
 
-	//ask the user to either continue the search for other children or go back to main menu if no kids were found
 
-	else {
-		if (iterate > 0) {
-			alert("No descendants were found for " + parent.firstName + " " + parent.lastName + ". Continue with the next person.");
-		}
-		else {
-			let continueSearch = promptFor("No descendants were found for " + parent.firstName + " " + parent.lastName + ". Would you like to go back? Enter 'yes' or 'no'", yesNo).toLowerCase();
-			switch (continueSearch) {
+}
+function printChoices(evaluatedChoicesArr, arr){
+  //iterate through array 
+  for (let j = 0; j < evaluatedChoicesArr.length; j++){ 
+    arr += evaluatedChoicesArr[j] + " ";
+  }
+  alert("Choices: " + evaluatedChoicesArr.toString());
+}
+function displayInfo(person){ 
+  alert(person.id + " is " + person.firstName + " " + person.lastName + "'s ID.\n " + person.firstName + " " + person.lastName + "'s gender is: " + person.gender + ". \n DOB: " + person.dob + " Height: " + person.height + " Weight: " + person.weight + "\nEye Color: " + person.eyeColor + " Occupation: " + person.occupation);
+
+}
+function assignPeopleValues(p1, evaluatedChoicesArr){ 
+  for (let j = 0; j < evaluatedChoicesArr.length; j++){//iterate through array 
+    if((evaluatedChoicesArr[j] == "brown") || (evaluatedChoicesArr[j] == "black") || (evaluatedChoicesArr[j] == "hazel") || (evaluatedChoicesArr[j] == "blue") || (evaluatedChoicesArr[j] == "green")){ //if array is equal to any of the eye colors
+      p1.eyeColor = evaluatedChoicesArr[j];
+    } else if ((evaluatedChoicesArr[j] == "architect") || (evaluatedChoicesArr[j] == "student") || (evaluatedChoicesArr[j] == "doctor") || (evaluatedChoicesArr[j] == "assistant") || (evaluatedChoicesArr[j] == "politician") || (evaluatedChoicesArr[j] == "nurse") || (evaluatedChoicesArr[j] == "landscaper") || (evaluatedChoicesArr[j] == "programmer")){
+      p1.occupation = evaluatedChoicesArr[j];
+    } else if ((evaluatedChoicesArr[j] == "male") || (evaluatedChoicesArr[j] == "female")){
+      p1.gender = evaluatedChoicesArr[j];
+    } else if ((evaluatedChoicesArr[j] < 90)){ //height
+      p1.height = evaluatedChoicesArr[j];
+    } else if((evaluatedChoicesArr[j] < 500)){ //weight
+      p1.weight = evaluatedChoicesArr[j];
+    }  
+  }
+}
+function searchBasedOffProperties(p1, people, evaluatedChoicesArr){ 
+  let counter = 0; //if counter hits 2 or more we have a match and can return the searched for person
+  let testArr = [];
+  let foundPerson = people.filter(function(person){
+    counter = 0;
+    if(person.eyeColor == p1.eyeColor){ 
+      counter++; 
+    }
+    if(person.occupation == p1.occupation) { 
+      counter++; 
+    }
+    if(person.height == p1.height){ 
+      counter++; 
+    }
+    if(person.weight == p1.weight){ 
+      counter++; 
+    }
+    if(person.gender == p1.gender){ 
+      counter++; 
+    }
+    if(counter == evaluatedChoicesArr.length) { 
+      testArr.push(person); 
+      return true; 
+    } else { 
+      return false;
+    }
+  });
+
+  if(foundPerson[0]){ 
+    alert("I've found " + foundPerson[0].firstName + " " + foundPerson[0].lastName); 
+    return foundPerson[0];
+  } 
+
+}
+function app(people){
+  let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+  let searchResults;
+  let cont = true;
+  let choicesArr = [];
+  let choicesCount = 0;
+  let traitSearch;
+  let choice = ""; 
+  let caseChoice = '';
+  let evaluatedChoicesArr = [];
+  let arr = [];
+  switch(searchType){
+    case 'yes':
+      searchResults = searchByName(people);
+
+      break;
+    case 'no':
+    //stores traits user wishes to sort by into an array.
+    getTraitsFromUser(choicesCount, traitSearch, cont, choicesArr);
+    evalTraitsFromUser(choicesArr, caseChoice, choice, evaluatedChoicesArr);
+    printChoices(evaluatedChoicesArr, arr);
+    let p1 = new peoples(0,"","","",0,0,"","",[],"");
+    assignPeopleValues(p1, evaluatedChoicesArr, choicesCount); //set all properties defined by user to properties of p1. 
+    searchResults = searchBasedOffProperties(p1, people, evaluatedChoicesArr); 
+      break;
+      default:
+    app(people); // restart app
+      break;
+  }
+  
+  // Call the mainMenu function ONLY after you find the SINGLE person you are looking for
+  mainMenu(searchResults, people); //searchresults is the object of the person we found, people is the whole array
+}
+function mainMenu(person, people){
+  let response;
+  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
+  if(!person){
+    alert("Could not find that individual.");
+    return app(people); // restart
+  }
+  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+  switch(displayOption){
+    case "info":
+      displayInfo(person);
+      response = promptFor("Would you like to look up other info? Enter 'yes' or 'no':", yesNo).toLowerCase();
+			switch (response) {
 				case 'yes':
+					mainMenu(person, people);
 					break;
 				case 'no':
-					alert("This person has no siblings. Go back to previous menu.")
+          break;
+      }
+    break;
+    case "family":
+        displayPeople(person, people);
+        response = promptFor("Would you like to look up other info? Enter 'yes' or 'no':", yesNo).toLowerCase();
+        switch (response) {
+          case 'yes':
+            mainMenu(person, people);
+            break;
+          case 'no':
+            break;
+        }
+        // TODO: get person's family
+        break;
+    case "descendants":
+      descendant(person, people, person);
+      response = promptFor("Would you like to look up other info? Enter 'yes' or 'no':", yesNo).toLowerCase();
+			switch (response) {
+				case 'yes':
+					mainMenu(person, people);
 					break;
-				default:
-					alert("Invalid response. Go back to previous menu.")
-					break;
-			}
-		}
-	}
+				case 'no':
+          break;
+      }
+    break;
+    case "restart":
+    app(people); // restart
+    break;
+    case "quit":
+    return; // stop execution
+    default:
+    return mainMenu(person, people); // ask again
+  }
 }
+function searchForFam(people, familyID){ 
+  if(familyID == false){ 
+    return "no other family";
+  }
+  let foundFamily = people.filter(function(person){
+    if(person.id == familyID){      
+      return true;      
+    }
+    else{
+      return false;
+    }
+  });
 
-function searchByName(people) {
-	let firstName = promptFor("What is the person's first name?", chars).toLowerCase();
-	let lastName = promptFor("What is the person's last name?", chars).toLowerCase();
-
-	let foundPerson = people.filter(function (person) {
-		if (person.firstName.toLowerCase() == firstName && person.lastName.toLowerCase() == lastName) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	});
-	// TODO: find the person using the name they entered
-	return foundPerson[0];
+  if(foundFamily[0]){
+      return (foundFamily[0].firstName + " " + foundFamily[0].lastName); //returns the onbject stored in the foundperson filtered array, which only contains 1 object anyway
+  } else { 
+    return "no family";
+  }
 }
+function searchForSiblings(people, person){ 
+let kidsArr = [];
+let siblings = people.filter(function(el){
+  if(person.parents[0] == el.parents[0] || person.parents[1] == el.parents[1]){
+    if(el.firstName == person.firstName){ 
+    } else { 
+    kidsArr = kidsArr + el.firstName + " " + el.lastName + ", "  
+    }    
+  }
+});
 
-// alerts a list of people
+return kidsArr.toString();
+}
+function searchForSpouse(people, familyID){ 
+  let foundFamily = people.filter(function(person){
+    if(person.id == familyID){      
+      return true;      
+    }
+    else{
+      return false;
+    }
+  });
+  
+  if(foundFamily[0]){
+    return (foundFamily[0].firstName + " " + foundFamily[0].lastName); //returns the onbject stored in the foundperson filtered array, which only contains 1 object anyway
+    } else { 
+      return "no family"
+    }  
+}
+function searchByName(people){
+  let firstName = makeFirstLetterCapital(promptFor("What is the person's first name?", chars));
+  let lastName = makeFirstLetterCapital(promptFor("What is the person's last name?", chars));
+  let foundPerson = people.filter(function(person){
+    if(person.firstName == firstName && person.lastName == lastName){      
+      return true;      
+    }
+    else{
+      //this iterates through all of list so dont include below alert for test. It will also always trigger
+      //alert("searchByName returned false");
+      return false;
+    }
+  });
+  // TODO: find the person using the name they entered
+  return foundPerson[0]; //returns the onbject stored in the foundperson filtered array, which only contains 1 object anyway
+}
 function displayPeople(currentPerson, people) {
 	let newFamilyArray = [];
 	let family = people.map(function (person) {
@@ -210,37 +415,23 @@ function displayPeople(currentPerson, people) {
 	}
 	alert(newFamilyArray.join(""));
 }
-
-function displayPerson(person) {
-	// print all of the information about a person:
-	// height, weight, age, name, occupation, eye color.
-	let personInfo = "First Name: " + person.firstName + "\n";
-	personInfo += "Last Name: " + person.lastName + "\n";
-	personInfo += "ID: " + person.id + "\n";
-	personInfo += "Gender: " + person.gender + "\n";
-	personInfo += "D.O.B: " + person.dob + "\n";
-	personInfo += "Height: " + person.height + "\n";
-	personInfo += "Weight: " + person.weight + "\n";
-	personInfo += "Eye Color: " + person.eyeColor + "\n";
-	personInfo += "Occupation: " + person.occupation;
-	// TODO: finish getting the rest of the information to display
-	alert(personInfo);
+function displayPerson(person){
+  // print all of the information about a person:
+  // height, weight, age, name, occupation, eye color.
+  let personInfo = "First Name: " + person.firstName + "\n";
+  personInfo += "Last Name: " + person.lastName + "\n";
+  // TODO: finish getting the rest of the information to display
+  alert(personInfo);
 }
-
-// function that prompts and validates user input
-function promptFor(question, valid) {
-	do {
-		var response = prompt(question).trim();
-	} while (!response || !valid(response));
-	return response;
+function promptFor(question, valid){
+  do{
+    var response = prompt(question).trim();
+  } while(!response || !valid(response));
+  return response;
 }
-
-// helper function to pass into promptFor to validate yes/no answers
-function yesNo(input) {
-	return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
+function yesNo(input){
+  return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
 }
-
-// helper function to pass in as default promptFor validation
-function chars(input) {
-	return true; // default validation only
+function chars(input){
+  return true; // default validation only
 }
